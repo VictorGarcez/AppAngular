@@ -1,0 +1,106 @@
+<div class="container p-5" *ngIf="visibilidadeFormulario">
+    <div class="row">
+        <h6> {{ tituloFormulario }}</h6>
+        <div class="col-12 border border-light rounded p-5 shadow" *ngIf="formulario">
+            <button type="button" class="btn btn-sm  btn-outline-danger rounded float-end" (click)="fecharFormularioCadastro()"> X </button>
+        <div class="col-5 border border-light rounded p-5 shadow" >
+            <form [formGroup]="formulario" (ngSubmit)="enviarFormulario()" >
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="nome" />
+                    
+                    
+                </div>
+                <div class="form-group">
+                    <label>E-Mail</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="email"/>
+                    
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento</label>
+                    <input type="date" class="form-control form-control-sm" formControlName="dataNasc" placeholder="dd/MM/yyyy"  />
+                    
+                </div>
+                <div class="form-group">
+                    <label>Cep</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="cep" />
+                    
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="row"></div>
+                        <div>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary"> Salvar </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-5 border border-light rounded p-5 shadow" >
+            <form [formGroup]="formularioCep" >
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="BuscarCep()"> Buscar Cep </button>
+                <div class="form-group">
+                    <label>Logradouro</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="logradouro" />
+                </div>
+                <div class="form-group">
+                    <label>Complemento</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="complemento" />
+                </div>
+                <div class="form-group">
+                    <label>Bairro</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="bairro"   />
+                </div>
+                <div class="form-group">
+                    <label>Localidade</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="localidade" />
+                </div>
+              
+                <div class="form-group">
+                    <label>Estado</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="estado" />
+                </div>
+                <div class="form-group">
+                    <label>DDD</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="ddd" />
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="container p-5">
+    <div class="border border-light rounded p-5" >
+        <button type="button" class="btn btn-sm  btn-outline-secondary" (click)="exibirFormularioCadastro()"> Nova Pessoa </button>
+    
+    <hr>
+
+    <table class="table table-dark table-striped table-hover" *ngIf="pessoas">
+        <thead>
+        <tr class="thead-dark">
+            <th>Nome</th>
+            <th>E-Mail</th>
+            <th>Data de Nascimento</th>
+            <th>Cep</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let pessoa of pessoas">
+            <td>{{pessoa.nome}}</td>
+            <td>{{pessoa.email}}</td>
+            <td>{{pessoa.dataNasc}}</td>
+            <td>{{pessoa.cep}}</td>
+            <td> 
+                <button type="button" class=" btn btn-sm btn-outline-info" (click)="exibirFormularioAlteracao(pessoa.idPessoa)"> Atualizar </button>
+                <button type="button" class=" btn btn-sm btn-outline-danger" (click)="excluirPessoa(pessoa.idPessoa)" > Excluir </button>
+            </td>
+
+        </tr>
+    </tbody>
+    </table>
+</div>
+</div>
+
+
