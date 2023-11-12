@@ -1,29 +1,33 @@
+
 <div class="container p-5" *ngIf="visibilidadeFormulario">
     <div class="row">
         <h6> {{ tituloFormulario }}</h6>
         <div class="col-12 border border-light rounded p-5 shadow" *ngIf="formulario">
             <button type="button" class="btn btn-sm  btn-outline-danger rounded float-end" (click)="fecharFormularioCadastro()"> X </button>
         <div class="col-5 border border-light rounded p-5 shadow" >
-            <form [formGroup]="formulario" (ngSubmit)="enviarFormulario()" >
+            <form [formGroup]="formulario" #formDir="ngForm" (ngSubmit)="enviarFormulario()" >
                 <div class="form-group">
                     <label>Nome</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="nome" />
-                    
+                    <input type="text" class="form-control form-control-sm" formControlName="nome"  name="nome" required/>
+                    <div *ngIf="nome.invalid && formDir.submitted" class="error-validation">Nome é Obrigatório.</div>
                     
                 </div>
                 <div class="form-group">
                     <label>E-Mail</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="email"/>
+                    <input type="text" class="form-control form-control-sm" [email]="true" formControlName="email"/>
+                    <div *ngIf="email.invalid && formDir.submitted" class="error-validation">E-mail válido é Obrigatório.</div>
                     
                 </div>
                 <div class="form-group">
                     <label>Data de Nascimento</label>
-                    <input type="date" class="form-control form-control-sm" formControlName="dataNasc" placeholder="dd/MM/yyyy"  />
+                    <input type="date" id="dataNasc"  class="form-control form-control-sm" formControlName="dataNasc" placeholder="dd/MM/yyyy"  />
+                    <div *ngIf="dataNasc.invalid && formDir.submitted" class="error-validation">Data de Nascimento é Obrigatório.</div>
                     
                 </div>
                 <div class="form-group">
                     <label>Cep</label>
                     <input type="text" class="form-control form-control-sm" formControlName="cep" />
+                    <div *ngIf="cep.invalid && formDir.submitted" class="error-validation">Cep é Obrigatório.</div>
                     
                 </div>
                 <div class="container">
@@ -41,7 +45,7 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary" (click)="BuscarCep()"> Buscar Cep </button>
                 <div class="form-group">
                     <label>Logradouro</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="logradouro" />
+                    <input type="text" class="form-control form-control-sm" formControlName="logradouro"/>
                 </div>
                 <div class="form-group">
                     <label>Complemento</label>
@@ -53,16 +57,16 @@
                 </div>
                 <div class="form-group">
                     <label>Localidade</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="localidade" />
+                    <input type="text" class="form-control form-control-sm" formControlName="localidade"  />
                 </div>
               
                 <div class="form-group">
                     <label>Estado</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="estado" />
+                    <input type="text" class="form-control form-control-sm" formControlName="estado"  />
                 </div>
                 <div class="form-group">
                     <label>DDD</label>
-                    <input type="text" class="form-control form-control-sm" formControlName="ddd" />
+                    <input type="text" class="form-control form-control-sm" formControlName="ddd"  />
                 </div>
             </form>
         </div>
@@ -76,7 +80,7 @@
     
     <hr>
 
-    <table class="table table-dark table-striped table-hover" *ngIf="pessoas">
+    <table  id="pessoasTable" data-page-length='100'  class="table table-light table-striped table-hover" *ngIf="pessoas">
         <thead>
         <tr class="thead-dark">
             <th>Nome</th>
@@ -102,5 +106,4 @@
     </table>
 </div>
 </div>
-
 

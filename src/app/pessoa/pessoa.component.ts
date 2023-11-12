@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PessoasService } from '../pessoas.service';
 import { CepService } from '../cep.service';
 import { Pessoa } from '../Pessoa';
 import { DatePipe, formatDate } from '@angular/common'
+import DataTable from 'datatables.net-dt';
+
+declare function CarregarDataTablePessoas(): void;
 
 @Component({
   selector: 'app-pessoa',
@@ -12,40 +15,50 @@ import { DatePipe, formatDate } from '@angular/common'
 })
 export class PessoaComponent {
   
-  formulario: any;
-  formularioCep : any;
+  formulario!: FormGroup;
+  formularioCep! : FormGroup;
   pessoas: Pessoa[] | undefined;
   visibilidadeFormulario: boolean = false;
   tituloFormulario: string = "";
   idPessoa: any;
   
-  
-
-
-
-  constructor(private pessoasService : PessoasService, public datepipe: DatePipe, private cepService : CepService) {
+  constructor(private pessoasService : PessoasService, public datepipe: DatePipe, private cepService : CepService, private formBuilder: FormBuilder) {
     
-
   }
   ngOnInit() : void {
     this.pessoasService.Get().subscribe(res => {
       this.pessoas = res;
     });
+      
+      this.iniciarFormPessoa();
+      this.iniciarFormCep();
+      
+  }
+  ngAfterContentChecked() :void {
+    CarregarDataTablePessoas();  
+  }
 
-
-    
+  
+  get nome(){
+    return this.formulario.get('nome')!;
+  }
+  get email(){
+    return this.formulario.get('email')!;
+  }
+  get dataNasc(){
+    return this.formulario.get('dataNasc')!;
+  }
+  get cep(){
+    return this.formulario.get('cep')!;
   }
 
   exibirFormularioCadastro(): void {
 
+    this.formularioCep.reset();
+    this.formulario.reset();
     if(this.visibilidadeFormulario == false)
     {
-      this.formulario= new FormGroup({
-        nome: new FormControl(null),
-        email: new FormControl(null),
-        dataNasc: new FormControl(null),
-        cep: new FormControl(null)
-        });
+      
       this.BuscarCep();
       this.tituloFormulario = "Adicionar Pessoa";
       this.visibilidadeFormulario = true;
@@ -61,30 +74,28 @@ export class PessoaComponent {
 
   exibirFormularioAlteracao(idPessoa : any): void {
     this.tituloFormulario = "Atualizar Pessoa";
-    debugger;
     this.pessoasService.GetById(idPessoa).subscribe(res => {
       this.idPessoa = idPessoa;
-      this.formulario = new FormGroup({
-        nome: new FormControl(res.nome),
-        email: new FormControl(res.email),
-        dataNasc: new FormControl(res.dataNasc),
-        cep: new FormControl(res.cep)
-        });
-
+      this.formulario = this.formBuilder.group({
+        nome: [res.nome, [Validators.required]],
+        email: [res.email, [Validators.required, Validators.email]],
+        dataNasc: [formatDate(res.dataNasc!, 'yyyy-MM-dd', 'en'), [Validators.required]],
+        cep: [res.cep, [Validators.required]]
+    });
         this.BuscarCep();
         this.visibilidadeFormulario = true;
     })
   }
 
   excluirPessoa(idPessoa :any) : void{
-    debugger;
     this.pessoasService.Delete(idPessoa).subscribe(res => {
       alert('Pessoa excluida com sucesso');
     });
+    window.location.reload();
   }
 
   BuscarCep(): void{
-    if(this.formulario.value.cep != null){
+    if(this.formulario.value.cep != null && this.formulario.value.cep.length > 5){
       this.cepService.ConsultaCep(this.formulario.value.cep).subscribe(res => {
         
         this.formularioCep= new FormGroup({
@@ -95,30 +106,38 @@ export class PessoaComponent {
           estado: new FormControl(res.uf),
           ddd: new FormControl(res.ddd)
           });
-          
       })
     }
     else{
-      this.formularioCep= new FormGroup({
-        logradouro: new FormControl(null),
-        complemento: new FormControl(null),
-        bairro: new FormControl(null),
-        localidade: new FormControl(null),
-        estado: new FormControl(null),
-        ddd: new FormControl(null)
-      });
+      this.formularioCep.reset();
     }
   }
 
-
+  iniciarFormCep(){
+    this.formularioCep= new FormGroup({
+      logradouro: new FormControl(''),
+      complemento: new FormControl(''),
+      bairro: new FormControl(''),
+      localidade: new FormControl(''),
+      estado: new FormControl(''),
+      ddd: new FormControl('')
+    });
+    
+  }
+  iniciarFormPessoa(){
+    this.formulario = new FormGroup({
+      nome: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      dataNasc: new FormControl('', [Validators.required]),
+      cep: new FormControl('', [Validators.required])
+      });
+  }
   enviarFormulario() : void {
     const pessoa : Pessoa = this.formulario.value;
     if(this.idPessoa != undefined){
       pessoa.idPessoa = this.idPessoa;
       this.pessoasService.Update(pessoa).subscribe( res =>  {
         alert('Atualizado com sucesso')
-        this.fecharFormularioCadastro();
-
       });
     }
     else{
@@ -126,5 +145,6 @@ export class PessoaComponent {
         alert('Inserido com sucesso')
       });
     }
+    window.location.reload();
   }
 }
